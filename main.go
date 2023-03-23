@@ -11,50 +11,6 @@ import (
 	// "github.com/bjornarsk/funtemps/conv"
 )
 
-/*func main() {
-	var input string
-	scanner := bufio.NewScanner(os.Stdin)
-
-	fmt.Println("Venligst velg convert, average eller exit:")
-
-	for scanner.Scan() {
-		input = scanner.Text()
-
-		if input == "q" || input == "exit" {
-			fmt.Println("exit")
-			os.Exit(0)
-
-		} else if input == "convert" {
-			fmt.Println("Konverterer alle målingene gitt i grader Celsius til grader Fahrenheit.")
-			// funksjon som gjør åpner fil, leser linjer, gjør endringer og lagrer nye linjer i en ny fil
-			yr.ConvertTemperature()
-
-		} else if input == "average" {
-			fmt.Println("Gjennomsnitt-kalkulator")
-			yr.AverageTemperature()
-
-			var input2 string
-			scanjn := bufio.NewScanner(os.Stdin)
-			fmt.Println("Avslutte? (j/n)")
-			for scanjn.Scan() {
-				input2 = scanjn.Text()
-				if input2 == "j" {
-					// input == "average"
-				} else {
-					fmt.Println("Gjennomsnittkalkulator")
-					yr.AverageTemperature()
-					return
-				}
-			}
-		}
-
-		fmt.Println("Venligst velg convert, average eller exit:")
-		// yr.ConvertTemperature()
-
-		// yr.AverageTemperature()
-	}
-} */
-
 func main() {
 	var input string
 	scanner := bufio.NewScanner(os.Stdin)
