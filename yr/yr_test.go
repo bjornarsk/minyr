@@ -1,9 +1,9 @@
-package yr
+package yr_test
 
 import (
-	"fmt"
-	"os"
 	"testing"
+
+	"github.com/bjornarsk/minyr/yr"
 )
 
 // Tester fra oppgavebeskrivelsen
@@ -21,7 +21,7 @@ func TestCountLines(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		got := countLines(tc.input)
+		got := yr.CountLines(tc.input)
 		if got != tc.want {
 			t.Errorf("%v: want %v, got %v,", tc.input, tc.want, got)
 		}
@@ -29,97 +29,31 @@ func TestCountLines(t *testing.T) {
 }
 
 // gitt "Kjevik;SN39040;18.03.2022 01:50;6" ønsker å få (want) "Kjevik;SN39040;18.03.2022 01:50;42.8"
+// gitt "Kjevik;SN39040;18.03.2022 01:50;0" ønsker å få (want) "Kjevik;SN39040;18.03.2022 01:50;32.0"
+// gitt "Kjevik;SN39040;18.03.2022 01:50;-11" ønsker å få (want) "Kjevik;SN39040;18.03.2022 01:50;12.2"
 
-func TestProcessLine(t *testing.T) {
-	// Create a temporary input file with a single line
-	tmpfile, err := os.CreateTemp("", "test_input")
-	if err != nil {
-		t.Fatalf("failed to create temporary file: %v", err)
+// gitt "Data er gyldig per 18.03.2023 (CC BY 4.0), Meteorologisk institutt (MET);;;" ønsker å få (want)
+// "Data er basert på gyldig data (per 18.03.2023) (CC BY 4.0) fra Meteorologisk institutt (MET);endringen er gjort av STUDENTENS_NAVN"
+
+func TestConvertLines(t *testing.T) {
+
+	type test struct {
+		input string
+		want  string
 	}
-	defer tmpfile.Close()
 
-	// Write a line to the input file
-	fmt.Fprintf(tmpfile, "Kjevik;SN39040;18.03.2022 01:50;6\n")
-
-	// Call processLine() on the input line
-	got := processLine("Kjevik;SN39040;18.03.2022 01:50;6")
-
-	// Check that the output is as expected
-	want := "Kjevik;SN39040;18.03.2022 01:50;42.8"
-	if got != want {
-		t.Errorf("processLine() = %q, want %q", got, want)
-		fmt.Println("Actual output: ", got)
+	tests := []test{
+		{input: "Kjevik;SN39040;18.03.2022 01:50;6", want: "Kjevik;SN39040;18.03.2022 01:50;42.8"},
+		{input: "Kjevik;SN39040;07.03.2023 18:20;0", want: "Kjevik;SN39040;07.03.2023 18:20;32.0"},
+		{input: "Kjevik;SN39040;08.03.2023 02:20;-11", want: "Kjevik;SN39040;08.03.2023 02:20;12.2"},
+		{input: "Data er gyldig per 18.03.2023 (CC BY 4.0), Meteorologisk institutt (MET);;;",
+			want: "Data er basert på gyldig data (per 18.03.2023) (CC BY 4.0) fra Meteorologisk institutt (MET);endringen er gjort av Bjørnar"},
 	}
-}
 
-// gitt "Kjevik;SN39040;07.03.2023 18:20;0" ønsker å få (want) "Kjevik;SN39040;07.03.2023 18:20;32"
-
-func TestProcessLine2(t *testing.T) {
-	// Create a temporary input file with a single line
-	tmpfile, err := os.CreateTemp("", "test_input")
-	if err != nil {
-		t.Fatalf("failed to create temporary file: %v", err)
-	}
-	defer tmpfile.Close()
-
-	// Write a line to the input file
-	fmt.Fprintf(tmpfile, "Kjevik;SN39040;07.03.2023 18:20;0\n")
-
-	// Call processLine() on the input line
-	got := processLine("Kjevik;SN39040;07.03.2023 18:20;0")
-
-	// Check that the output is as expected
-	want := "Kjevik;SN39040;07.03.2023 18:20;32.0"
-	if got != want {
-		t.Errorf("processLine() = %q, want %q", got, want)
-		fmt.Println("Actual output: ", got)
-	}
-}
-
-// gitt "Kjevik;SN39040;08.03.2023 02:20;-11" ønsker å få (want) "Kjevik;SN39040;08.03.2023 02:20;12.2"
-
-func TestProcessLine3(t *testing.T) {
-	// Create a temporary input file with a single line
-	tmpfile, err := os.CreateTemp("", "test_input")
-	if err != nil {
-		t.Fatalf("failed to create temporary file: %v", err)
-	}
-	defer tmpfile.Close()
-
-	// Write a line to the input file
-	fmt.Fprintf(tmpfile, "Kjevik;SN39040;08.03.2023 02:20;-11\n")
-
-	// Call processLine() on the input line
-	got := processLine("Kjevik;SN39040;08.03.2023 02:20;-11")
-
-	// Check that the output is as expected
-	want := "Kjevik;SN39040;08.03.2023 02:20;12.2"
-	if got != want {
-		t.Errorf("processLine() = %q, want %q", got, want)
-		fmt.Println("Actual output: ", got)
-	}
-}
-
-// gitt "Data er gyldig per 18.03.2023 (CC BY 4.0), Meteorologisk institutt (MET);;;" ønsker å få (want) "Data er basert på gyldig data (per 18.03.2023) (CC BY 4.0) fra Meteorologisk institutt (MET);endringen er gjort av STUDENTENS_NAVN", hvor STUDENTENS_NAVN er navn på studenten som leverer besvarelsen
-
-func TestProcessLastLine(t *testing.T) {
-	// Create a temporary input file with a single line
-	tmpfile, err := os.CreateTemp("", "test_input")
-	if err != nil {
-		t.Fatalf("failed to create temporary file: %v", err)
-	}
-	defer tmpfile.Close()
-
-	// Write a line to the input file
-	fmt.Fprintf(tmpfile, "Data er gyldig per 18.03.2023 (CC BY 4.0), Meteorologisk institutt (MET);;;\n")
-
-	// Call processLine() on the input line
-	got := processLine("Data er gyldig per 18.03.2023 (CC BY 4.0), Meteorologisk institutt (MET);;;")
-
-	// Check that the output is as expected
-	want := "Data er basert på gyldig data (per 18.03.2023) (CC BY 4.0) fra Meteorologisk institutt (MET);endringen er gjort av Bjørnar"
-	if got != want {
-		t.Errorf("processLine() = %q, want %q", got, want)
-		fmt.Println("Actual output: ", got)
+	for _, tc := range tests {
+		got := yr.ProcessLine(tc.input)
+		if !(tc.want == got) {
+			t.Errorf("expected: %v, got: %v", tc.want, got)
+		}
 	}
 }

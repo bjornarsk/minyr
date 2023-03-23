@@ -42,7 +42,7 @@ func ConvertTemperature() {
 		line := scanner.Text()
 
 		// Process the input line
-		outputLine := processLine(line)
+		outputLine := ProcessLine(line)
 
 		// Write the output line to the output file
 		_, err := outputWriter.WriteString(outputLine + "\n")
@@ -104,7 +104,7 @@ func createOutputFile() (*os.File, error) {
 	return outputFile, nil
 }
 
-func processLine(line string) string {
+func ProcessLine(line string) string {
 	if line == "" {
 		return ""
 	}
@@ -210,7 +210,7 @@ func AverageTemperature() {
 
 // Funksjon that counts the amout of lines in a file
 
-func countLines(inputFile string) int {
+func CountLines(inputFile string) int {
 	file, err := os.Open(inputFile)
 	if err != nil {
 		log.Fatal(err)
