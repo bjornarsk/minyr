@@ -13,116 +13,127 @@ import (
 )
 
 func ConvertTemperature() {
-	// Check if the file already exists
-	if _, err := os.Stat("output-test.csv"); err == nil {
-		fmt.Print("Filen eksisterer allerede. Vil du generere filen på nytt? (j/n): ")
-		var overwriteInput string
-		fmt.Scanln(&overwriteInput)
-		fmt.Println("Genererer filen på nytt...")
-		if strings.ToLower(overwriteInput) == "n" {
-			fmt.Println("Går tilbake til hovedmeny")
-			return
-		}
+	overwriteFile := checkFileExists()
+	if !overwriteFile {
+		fmt.Println("Går tilbake til hovedmeny")
+		return
 	}
 
-	// Open the input file
-	file, err := os.Open("kjevik-temp-celsius-20220318-20230318.csv")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
+	inputFile := openInputFile()
+	defer inputFile.Close()
 
-	// Create the output file
-	outputFile, err := os.Create("output-test.csv")
+	outputFile, err := createOutputFile()
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer outputFile.Close()
 
-	// Create a writer to write to the output file
 	outputWriter := bufio.NewWriter(outputFile)
 
-	// Create a scanner to read the input file line by line
-	scanner := bufio.NewScanner(file)
+	scanner := bufio.NewScanner(inputFile)
 
-	// Write the first line to the output file
 	if scanner.Scan() {
 		_, err := outputWriter.WriteString(scanner.Text() + "\n")
 		if err != nil {
 			log.Fatal(err)
 		}
 	}
-
-	var outputLine string
-
-	// Loop through each remaining line in the input file
 	for scanner.Scan() {
 		line := scanner.Text()
 
-		// Skip the line if it's empty
-		if line == "" {
-			continue
-		}
-
-		// Split the line into fields separated by ";"
-		fields := strings.Split(line, ";")
-
-		// Extract the last field from the line, if there is one
-		var lastField string
-		if len(fields) > 0 {
-			lastField = fields[len(fields)-1]
-		}
-
-		// Convert the last field to Fahrenheit, if there is one
-		var convertedField string
-		if lastField != "" {
-			var err error
-			convertedField, err = convertLastField(lastField)
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "error: %v\n", err)
-				continue
-			}
-		}
-
-		// Replace the original last field with the converted field, if there is one
-		if convertedField != "" {
-			fields[len(fields)-1] = convertedField
-		}
-
-		if line[0:7] == "Data er" {
-			outputLine = "Data er basert på gyldig data (per 18.03.2023) (CC BY 4.0) fra Meteorologisk institutt (MET);endringen er gjort av Bjørnar"
-		} else {
-			// Put the fields back together with semicolons in between
-			outputLine = strings.Join(fields, ";")
-		}
+		// Process the input line
+		outputLine := processLine(line)
 
 		// Write the output line to the output file
-		_, err = outputWriter.WriteString(outputLine + "\n")
+		_, err := outputWriter.WriteString(outputLine + "\n")
 		if err != nil {
 			panic(err)
 		}
 	}
 
-	// Flush the writer to ensure all data is written to the file
-	err = outputWriter.Flush()
+	outputWriter.Flush()
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)
-
 	}
 
 	fmt.Println("Ferdig!")
 }
 
-func convertLastField(lastField string) (string, error) {
-	// Return an error if the last field is empty
-	if lastField == "" {
-		return "", fmt.Errorf("last field is empty")
+func checkFileExists() bool {
+	if _, err := os.Stat("kjevik-temp-fahr-20220318-20230318.csv"); err == nil {
+		fmt.Print("Filen eksisterer allerede. Vil du generere filen på nytt? (j/n): ")
+		var overwriteInput string
+		fmt.Scanln(&overwriteInput)
+		if strings.ToLower(overwriteInput) == "j" {
+			err := os.Remove("kjevik-temp-fahr-20220318-20230318.csv")
+			if err != nil {
+				log.Fatal(err)
+			}
+			return true
+		}
+		return false
+	}
+	return true
+}
+
+func openInputFile() *os.File {
+	file, err := os.Open("kjevik-temp-celsius-20220318-20230318.csv")
+	if err != nil {
+		log.Fatal(err)
+	}
+	return file
+}
+
+func createOutputFile() (*os.File, error) {
+	outputFilePath := "kjevik-temp-fahr-20220318-20230318.csv"
+	if _, err := os.Stat(outputFilePath); err == nil {
+		fmt.Printf("File %s already exists. Deleting...\n", outputFilePath)
+		err := os.Remove(outputFilePath)
+		if err != nil {
+			return nil, fmt.Errorf("could not delete file: %v", err)
+		}
+	}
+	outputFile, err := os.Create(outputFilePath)
+	if err != nil {
+		return nil, fmt.Errorf("could not create file: %v", err)
+	}
+	return outputFile, nil
+}
+
+func processLine(line string) string {
+	if line == "" {
+		return ""
+	}
+	fields := strings.Split(line, ";")
+	lastField := ""
+	if len(fields) > 0 {
+		lastField = fields[len(fields)-1]
+	}
+	convertedField := ""
+	if lastField != "" {
+		var err error
+		convertedField, err = convertLastField(lastField)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "error: %v\n", err)
+			return ""
+		}
+	}
+	if convertedField != "" {
+		fields[len(fields)-1] = convertedField
+	}
+	if line[0:7] == "Data er" {
+		return "Data er basert på gyldig data (per 18.03.2023) (CC BY 4.0) fra Meteorologisk institutt (MET);endringen er gjort av Bjørnar"
+	} else {
+		return strings.Join(fields, ";")
 	}
 
+}
+
+func convertLastField(lastField string) (string, error) {
 	// Convert the last field to a float
 	celsius, err := strconv.ParseFloat(lastField, 64)
 	if err != nil {
@@ -196,4 +207,24 @@ func AverageTemperature() {
 		average := sum / float64(count)
 		fmt.Printf("Gjennomsnittlig temperatur: %.2f°C\n", average)
 	}
+}
+
+// Testfunksjoner
+
+// function that counts the amout of lines in a file
+func countLines(inputFile string) int {
+	file, err := os.Open(inputFile) // open file
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer file.Close()                //closes file
+	scanner := bufio.NewScanner(file) // create scanner from bufio package
+	countedLines := 0                 // intitale variable with amount of lines
+	for scanner.Scan() {              // scan each line for content
+		line := scanner.Text()
+		if line != "" {
+			countedLines++
+		}
+	}
+	return countedLines
 }
