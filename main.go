@@ -40,7 +40,7 @@ func main() {
 
 				var input2 string
 				scanjn := bufio.NewScanner(os.Stdin)
-				fmt.Println("Avslutte? (j/n)")
+				fmt.Println("Tilbake til hovedmeny? (j/n)")
 				for scanjn.Scan() {
 					input2 = scanjn.Text()
 					if input2 == "j" {
