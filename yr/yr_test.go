@@ -8,17 +8,7 @@ import (
 
 // Tester fra oppgavebeskrivelsen
 
-/* antall linjer i filen er 16756
-
-gitt "Kjevik;SN39040;18.03.2022 01:50;6" ønsker å få (want) "Kjevik;SN39040;18.03.2022 01:50;42.8"
-
-gitt "Kjevik;SN39040;07.03.2023 18:20;0" ønsker å få (want) "Kjevik;SN39040;07.03.2023 18:20;32"
-
-gitt "Kjevik;SN39040;08.03.2023 02:20;-11" ønsker å få (want) "Kjevik;SN39040;08.03.2023 02:20;12.2"
-
-gitt "Data er gyldig per 18.03.2023 (CC BY 4.0), Meteorologisk institutt (MET);;;" ønsker å få (want) "Data er basert på gyldig data (per 18.03.2023) (CC BY 4.0) fra Meteorologisk institutt (MET);endringen er gjort av STUDENTENS_NAVN", hvor STUDENTENS_NAVN er navn på studenten som leverer besvarelsen
-
-*/
+// antall linjer i filen er 16756
 
 func TestCountLines(t *testing.T) {
 	type test struct {
@@ -37,6 +27,8 @@ func TestCountLines(t *testing.T) {
 		}
 	}
 }
+
+// gitt "Kjevik;SN39040;18.03.2022 01:50;6" ønsker å få (want) "Kjevik;SN39040;18.03.2022 01:50;42.8"
 
 func TestProcessLine(t *testing.T) {
 	// Create a temporary input file with a single line
@@ -60,6 +52,8 @@ func TestProcessLine(t *testing.T) {
 	}
 }
 
+// gitt "Kjevik;SN39040;07.03.2023 18:20;0" ønsker å få (want) "Kjevik;SN39040;07.03.2023 18:20;32"
+
 func TestProcessLine2(t *testing.T) {
 	// Create a temporary input file with a single line
 	tmpfile, err := os.CreateTemp("", "test_input")
@@ -81,6 +75,8 @@ func TestProcessLine2(t *testing.T) {
 		fmt.Println("Actual output: ", got)
 	}
 }
+
+// gitt "Kjevik;SN39040;08.03.2023 02:20;-11" ønsker å få (want) "Kjevik;SN39040;08.03.2023 02:20;12.2"
 
 func TestProcessLine3(t *testing.T) {
 	// Create a temporary input file with a single line
@@ -104,7 +100,9 @@ func TestProcessLine3(t *testing.T) {
 	}
 }
 
-func TestProcessLineLast(t *testing.T) {
+// gitt "Data er gyldig per 18.03.2023 (CC BY 4.0), Meteorologisk institutt (MET);;;" ønsker å få (want) "Data er basert på gyldig data (per 18.03.2023) (CC BY 4.0) fra Meteorologisk institutt (MET);endringen er gjort av STUDENTENS_NAVN", hvor STUDENTENS_NAVN er navn på studenten som leverer besvarelsen
+
+func TestProcessLastLine(t *testing.T) {
 	// Create a temporary input file with a single line
 	tmpfile, err := os.CreateTemp("", "test_input")
 	if err != nil {
@@ -125,5 +123,3 @@ func TestProcessLineLast(t *testing.T) {
 		fmt.Println("Actual output: ", got)
 	}
 }
-
-// test 2

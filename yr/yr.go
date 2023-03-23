@@ -130,10 +130,7 @@ func processLine(line string) string {
 	} else {
 		return strings.Join(fields, ";")
 	}
-
 }
-
-// Test 2
 
 func convertLastField(lastField string) (string, error) {
 	// Convert the last field to a float
@@ -203,7 +200,7 @@ func AverageTemperature() {
 
 	if unit == "fahr" {
 		average := sum / float64(count)
-		average = math.Round(average*100) / 100 // round to two decimal places
+		average = math.Round(average*100) / 100 // Round to two decimal places
 		fmt.Printf("Gjennomsnittlig temperatur: %.2f°F\n", average)
 	} else {
 		average := sum / float64(count)
@@ -211,18 +208,17 @@ func AverageTemperature() {
 	}
 }
 
-// Testfunksjoner
+// Funksjon that counts the amout of lines in a file
 
-// function that counts the amout of lines in a file
 func countLines(inputFile string) int {
-	file, err := os.Open(inputFile) // open file
+	file, err := os.Open(inputFile)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer file.Close()                //closes file
-	scanner := bufio.NewScanner(file) // create scanner from bufio package
-	countedLines := 0                 // intitale variable with amount of lines
-	for scanner.Scan() {              // scan each line for content
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	countedLines := 0
+	for scanner.Scan() {
 		line := scanner.Text()
 		if line != "" {
 			countedLines++

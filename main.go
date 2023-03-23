@@ -6,12 +6,7 @@ import (
 	"os"
 
 	"github.com/bjornarsk/minyr/yr"
-	// "strconv"
-	// "strings"
-	// "github.com/bjornarsk/funtemps/conv"
 )
-
-// endring for git push
 
 func main() {
 	var input string
@@ -39,6 +34,8 @@ func main() {
 			fmt.Println("Gjennomsnitt-kalkulator")
 
 			for {
+				// funksjon som deler opp datalinjene for å single ut det siste tallet, som er temperatur i celsius.
+				// Funksjonen tar så alle de siste tallene i filen og regner ut gjennomnsnitt i enten celsius eller fahr.
 				yr.AverageTemperature()
 
 				var input2 string
