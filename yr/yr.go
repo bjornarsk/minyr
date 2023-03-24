@@ -227,14 +227,22 @@ func CountLines(inputFile string) int {
 	return countedLines
 }
 
-func GetAverageTemperature(lines []string, unit string) (string, error) {
+func GetAverageTemperature(filepath string, unit string) (string, error) {
+	// Open the file
+	file, err := os.Open(filepath)
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
 	var sum float64
 	count := 0
-	for i, line := range lines {
+	scanner := bufio.NewScanner(file)
+	for i := 0; scanner.Scan(); i++ {
 		if i == 0 {
 			continue // ignore header line
 		}
-		fields := strings.Split(line, ";")
+		fields := strings.Split(scanner.Text(), ";")
 		if len(fields) != 4 {
 			return "", fmt.Errorf("unexpected number of fields in line %d: %d", i, len(fields))
 		}
