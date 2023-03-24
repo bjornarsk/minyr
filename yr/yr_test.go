@@ -1,6 +1,8 @@
 package yr_test
 
 import (
+	"bufio"
+	"os"
 	"testing"
 
 	"github.com/bjornarsk/minyr/yr"
@@ -54,6 +56,55 @@ func TestConvertLines(t *testing.T) {
 		got := yr.ProcessLine(tc.input)
 		if !(tc.want == got) {
 			t.Errorf("expected: %v, got: %v", tc.want, got)
+		}
+	}
+}
+
+func TestAverageTemperature(t *testing.T) {
+
+	type test struct {
+		input   string
+		wantAvg string
+		wantErr error
+	}
+
+	tests := []test{
+		{
+			input:   "kjevik-temp-celsius-20220318-20230318.csv",
+			wantAvg: "8.56",
+			wantErr: nil,
+		},
+	}
+
+	for _, tc := range tests {
+		// Open the test csv file
+		file, err := os.Open(tc.input)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer file.Close()
+
+		// Read the lines from the csv file
+		scanner := bufio.NewScanner(file)
+
+		var lines []string
+
+		for scanner.Scan() {
+			lines = append(lines, scanner.Text())
+		}
+		if err := scanner.Err(); err != nil {
+			t.Fatal(err)
+		}
+
+		// Call the function to get the actual average temperature
+		actualAvg, err := yr.GetAverageTemperature(lines, "celsius")
+		if err != tc.wantErr {
+			t.Fatalf("expected error: %v, but got error: %v", tc.wantErr, err)
+		}
+
+		// Compare the actual and expected average temperature
+		if actualAvg != tc.wantAvg {
+			t.Errorf("expected average temperature %v, but got %v", tc.wantAvg, actualAvg)
 		}
 	}
 }

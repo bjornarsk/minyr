@@ -226,3 +226,33 @@ func CountLines(inputFile string) int {
 	}
 	return countedLines
 }
+
+func GetAverageTemperature(lines []string, unit string) (string, error) {
+	var sum float64
+	count := 0
+	for i, line := range lines {
+		if i == 0 {
+			continue // ignore header line
+		}
+		fields := strings.Split(line, ";")
+		if len(fields) != 4 {
+			return "", fmt.Errorf("unexpected number of fields in line %d: %d", i, len(fields))
+		}
+		if fields[3] == "" {
+			continue // ignore line with empty temperature field
+		}
+		temperature, err := strconv.ParseFloat(fields[3], 64)
+		if err != nil {
+			return "", fmt.Errorf("could not parse temperature in line %d: %s", i, err)
+		}
+
+		if unit == "fahr" {
+			// Convert back to Fahrenheit
+			temperature = conv.CelsiusToFahrenheit(temperature)
+		}
+		sum += temperature
+		count++
+	}
+	average := sum / float64(count)
+	return fmt.Sprintf("%.2f", average), nil
+}
