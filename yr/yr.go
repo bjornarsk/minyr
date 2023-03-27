@@ -41,10 +41,10 @@ func ConvertTemperature() {
 	for scanner.Scan() {
 		line := scanner.Text()
 
-		// Process the input line
+		// Prosesser input-linje
 		outputLine := ProcessLine(line)
 
-		// Write the output line to the output file
+		// Skriv ferdig prosessert input linje til output-fil
 		_, err := outputWriter.WriteString(outputLine + "\n")
 		if err != nil {
 			panic(err)
@@ -133,28 +133,28 @@ func ProcessLine(line string) string {
 }
 
 func convertLastField(lastField string) (string, error) {
-	// Convert the last field to a float
+	// Konvertere siste tallet i en linje til float-type
 	celsius, err := strconv.ParseFloat(lastField, 64)
 	if err != nil {
 		return "", err
 	}
 
-	// Convert Celsius to Fahrenheit
+	// Konverterer celsius til fahrenheit
 	fahrenheit := conv.CelsiusToFahrenheit(celsius)
 
-	// Convert the Fahrenheit temperature back to a string
+	// Konverterer float-verdien i fahrenheit tilbake til en string, som var den originale typen.
 	return fmt.Sprintf("%.1f", fahrenheit), nil
 }
 
 func AverageTemperature() {
-	// Open the csv file
+	// Åpne input-fil
 	file, err := os.Open("kjevik-temp-celsius-20220318-20230318.csv")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer file.Close()
 
-	// Read the lines from the csv file
+	// lese linjene fra fila
 	scanner := bufio.NewScanner(file)
 
 	var lines []string
@@ -166,24 +166,24 @@ func AverageTemperature() {
 		log.Fatal(err)
 	}
 
-	// Prompt the user for temperature unit
+	// Be brukeren om å skrive gjennomsnittlig temperatur i celsius eller fahrenheit
 	fmt.Println("Velg temperaturenhet (celsius/fahr):")
 	var unit string
 	fmt.Scan(&unit)
 
-	// Calculate the average temperature
+	// Regne ut gjennomsnittlig temperatur
 	var sum float64
 	count := 0
 	for i, line := range lines {
 		if i == 0 {
-			continue // ignore header line
+			continue
 		}
 		fields := strings.Split(line, ";")
 		if len(fields) != 4 {
 			log.Fatalf("unexpected number of fields in line %d: %d", i, len(fields))
 		}
 		if fields[3] == "" {
-			continue // ignore line with empty temperature field
+			continue
 		}
 		temperature, err := strconv.ParseFloat(fields[3], 64)
 		if err != nil {
@@ -191,7 +191,7 @@ func AverageTemperature() {
 		}
 
 		if unit == "fahr" {
-			// Convert back to Fahrenheit
+			// Konverterer tilbake til fahrenheit om det var det brukeren skrev inn
 			temperature = conv.CelsiusToFahrenheit(temperature)
 		}
 		sum += temperature
@@ -200,7 +200,7 @@ func AverageTemperature() {
 
 	if unit == "fahr" {
 		average := sum / float64(count)
-		average = math.Round(average*100) / 100 // Round to two decimal places
+		average = math.Round(average*100) / 100
 		fmt.Printf("Gjennomsnittlig temperatur: %.2f°F\n", average)
 	} else {
 		average := sum / float64(count)
@@ -208,7 +208,7 @@ func AverageTemperature() {
 	}
 }
 
-// Funksjon that counts the amout of lines in a file
+// Funksjon som teller linjer i en fil
 
 func CountLines(inputFile string) int {
 	file, err := os.Open(inputFile)
@@ -228,7 +228,6 @@ func CountLines(inputFile string) int {
 }
 
 func GetAverageTemperature(filepath string, unit string) (string, error) {
-	// Open the file
 	file, err := os.Open(filepath)
 	if err != nil {
 		return "", err
@@ -240,14 +239,14 @@ func GetAverageTemperature(filepath string, unit string) (string, error) {
 	scanner := bufio.NewScanner(file)
 	for i := 0; scanner.Scan(); i++ {
 		if i == 0 {
-			continue // ignore header line
+			continue
 		}
 		fields := strings.Split(scanner.Text(), ";")
 		if len(fields) != 4 {
 			return "", fmt.Errorf("unexpected number of fields in line %d: %d", i, len(fields))
 		}
 		if fields[3] == "" {
-			continue // ignore line with empty temperature field
+			continue
 		}
 		temperature, err := strconv.ParseFloat(fields[3], 64)
 		if err != nil {
@@ -255,7 +254,6 @@ func GetAverageTemperature(filepath string, unit string) (string, error) {
 		}
 
 		if unit == "fahr" {
-			// Convert back to Fahrenheit
 			temperature = conv.CelsiusToFahrenheit(temperature)
 		}
 		sum += temperature

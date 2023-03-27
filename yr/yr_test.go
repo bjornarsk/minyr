@@ -59,13 +59,11 @@ func TestConvertLines(t *testing.T) {
 }
 
 func TestGetAverageTemperature(t *testing.T) {
-	// Call the function to get the actual average temperature
 	actualAvg, err := yr.GetAverageTemperature("kjevik-temp-celsius-20220318-20230318.csv", "celsius")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	// Compare the actual and expected average temperature
 	expectedAvg := "8.56"
 	if actualAvg != expectedAvg {
 		t.Errorf("expected average temperature %v, but got %v", expectedAvg, actualAvg)
