@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/bjornarsk/minyr/yr"
 )
@@ -18,7 +19,7 @@ func main() {
 		if !scanner.Scan() {
 			break
 		}
-		input = scanner.Text()
+		input = strings.ToLower(scanner.Text())
 
 		switch input {
 		case "q", "exit":

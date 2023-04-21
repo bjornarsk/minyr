@@ -262,3 +262,60 @@ func GetAverageTemperature(filepath string, unit string) (string, error) {
 	average := sum / float64(count)
 	return fmt.Sprintf("%.2f", average), nil
 }
+
+func Format(input float64) string {
+	// Convert float64 to string with two decimal places
+	return strconv.FormatFloat(input, 'f', 2, 64)
+}
+
+func ConvertInputlineCtoF(inputLine string) string {
+	var yrData struct {
+		navn    string
+		stasjon string
+		tid     string
+		temp    string
+	}
+	dataArray := strings.Split(inputLine, ";")
+	yrData.navn = dataArray[0]
+	yrData.stasjon = dataArray[1]
+	yrData.tid = dataArray[2]
+	yrData.temp = dataArray[3]
+
+	celsius, err := strconv.ParseFloat(yrData.temp, 64)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	yrData.temp = Format(conv.CelsiusToFahrenheit(celsius))
+
+	newLine := []string{
+		yrData.navn,
+		yrData.stasjon,
+		yrData.tid,
+		yrData.temp,
+	}
+
+	convertedString := strings.Trim(strings.Join(newLine, ";"), "[]{}")
+	return convertedString
+}
+
+func FormatOutputString(num float64) string {
+	str := fmt.Sprintf("%.2f", num)
+	str = strings.TrimRight(str, "0")
+	parts := strings.Split(str, ".")
+	integerPart := parts[0]
+	decimalPart := parts[1]
+
+	var formattedIntegerPart string
+	n := len(integerPart)
+	for i, v := range integerPart {
+		formattedIntegerPart += string(v)
+		if (n-i-1)%3 == 0 && i != n-1 {
+			formattedIntegerPart += " "
+		}
+	}
+	if decimalPart != "" {
+		return formattedIntegerPart + "." + decimalPart
+	}
+	return formattedIntegerPart
+}
